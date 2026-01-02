@@ -1,0 +1,31 @@
+// Flutter + Flame starter for an endless runner game like Subway Surfers // Game concept: Tanmaya runs in traffic, collects books, power-ups (school bag magnet, jetpack), avoids obstacles.
+
+import 'package:flame/game.dart'; import 'package:flame/components.dart'; import 'package:flutter/material.dart';
+
+void main() { runApp(GameWidget(game: TanmayaRun())); }
+
+class TanmayaRun extends FlameGame with HasCollisionDetection { late Player player; double spawnTimer = 0; int score = 0;
+
+@override Future<void> onLoad() async { await images.loadAll([ 'player.png', 'book.png', 'bag.png', 'jet.png', 'car.png', 'bus.png', ]);
+
+player = Player()
+  ..position = Vector2(size.x / 2, size.y - 150);
+add(player);
+
+}
+
+@override void update(double dt) { super.update(dt); spawnTimer += dt; if (spawnTimer > 1.2) { spawnTimer = 0; add(Book()); if (random.nextBool()) add(Obstacle()); } score += (dt * 10).toInt(); } }
+
+class Player extends SpriteComponent with CollisionCallbacks { Player() : super(size: Vector2(64, 64));
+
+@override Future<void> onLoad() async { sprite = await Sprite.load('player.png'); add(RectangleHitbox()); }
+
+@override void update(double dt) { super.update(dt); // movement logic (swipe left/right later) } }
+
+class Book extends SpriteComponent with CollisionCallbacks { Book() : super(size: Vector2(32, 32));
+
+@override Future<void> onLoad() async { sprite = await Sprite.load('book.png'); position = Vector2(random.nextDouble() * 300, -32); add(RectangleHitbox()); }
+
+@override void update(double dt) { super.update(dt); y += 200 * dt; if (y > 800) removeFromParent(); } }
+
+class
